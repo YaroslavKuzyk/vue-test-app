@@ -42,8 +42,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import Dialog from "@/components/Dialog";
+import fetch from "@/utils/fetch";
 export default {
   name: "Post",
   components: {Dialog},
@@ -56,10 +56,10 @@ export default {
       dialogVisible: false
     }
   },
-  mounted() {
-    this.fetchPost()
-    this.fetchUser()
-    this.fetchComments()
+  async mounted() {
+    this.post = await fetch('https://jsonplaceholder.typicode.com/posts', this.$route.params.id)
+    this.user = await fetch('https://jsonplaceholder.typicode.com/users', this.$route.params.id)
+    this.comments = await fetch('https://jsonplaceholder.typicode.com/comments', this.$route.params.id, true)
   },
   methods: {
     showDialog(){
@@ -68,30 +68,6 @@ export default {
     addNewComment() {
       this.comments = [ { body: this.commentInput, id: Date.now(), email: 'kuzyk.yarik@mgail.com', name: 'Yaroslav' }, ...this.comments,]
     },
-    async fetchPost(){
-      try{
-        let {data} = await axios.get('https://jsonplaceholder.typicode.com/posts')
-        this.post = data.find(el => el.id == this.$route.params.id);
-      }catch (e) {
-        console.log(e)
-      }
-    },
-    async fetchUser(){
-      try{
-        let {data} = await axios.get('https://jsonplaceholder.typicode.com/users')
-        this.user = data.find(el => el.id == this.$route.params.id);
-      }catch (e) {
-        console.log(e)
-      }
-    },
-    async fetchComments(){
-      try{
-        let {data} = await axios.get('https://jsonplaceholder.typicode.com/comments')
-        this.comments = data.filter(el => el.postId == this.$route.params.id);
-      }catch (e) {
-        console.log(e)
-      }
-    }
   }
 }
 </script>
